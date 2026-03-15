@@ -23,10 +23,17 @@ class TheFatRat(HackingTool):
         ])
 
     def update(self):
-        os.system("cd TheFatRat && bash update && chmod +x setup.sh && bash setup.sh")
+        from config import get_tools_dir
+        cwd = str(get_tools_dir() / "TheFatRat")
+        subprocess.run(["bash", "update"], cwd=cwd)
+        subprocess.run(["chmod", "+x", "setup.sh"], cwd=cwd)
+        subprocess.run(["bash", "setup.sh"], cwd=cwd)
 
     def troubleshoot(self):
-        os.system("cd TheFatRat && sudo chmod +x chk_tools && ./chk_tools")
+        from config import get_tools_dir
+        cwd = str(get_tools_dir() / "TheFatRat")
+        subprocess.run(["chmod", "+x", "chk_tools"], cwd=cwd)
+        subprocess.run(["./chk_tools"], cwd=cwd)
 
 
 class Brutal(HackingTool):

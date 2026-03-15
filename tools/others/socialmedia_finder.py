@@ -28,14 +28,14 @@ class FacialFind(HackingTool):
     PROJECT_URL = "https://github.com/Greenwolf/social_mapper"
 
     def run(self):
-        os.system("cd social_mapper/setup")
-        os.system("sudo python social_mapper.py -h")
-        print("""\033[95m 
-                You have to set Username and password of your AC Or Any Fack Account
-                [#] Type in Terminal nano social_mapper.py
-        """)
-        os.system(
-            'echo "python social_mapper.py -f [<imageFoldername>] -i [<imgFolderPath>] -m fast [<AcName>] -fb -tw"| boxes | lolcat')
+        from config import get_tools_dir
+        import subprocess
+        setup_dir = get_tools_dir() / "social_mapper" / "setup"
+        subprocess.run(["python3", "social_mapper.py", "-h"], cwd=str(setup_dir))
+        console.print(
+            "[bold magenta]Set username and password in social_mapper.py before running.[/]\n"
+            "[magenta]Usage: python social_mapper.py -f <folder> -i <path> -m fast <AcName> -fb -tw[/]"
+        )
 
 
 class FindUser(HackingTool):

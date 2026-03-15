@@ -91,8 +91,9 @@ class XSSCon(HackingTool):
             border_style="bright_yellow"
         ))
         website = Prompt.ask("[bold cyan]Enter Website[/bold cyan]")
-        os.system("cd XSSCon;")
-        subprocess.run(["python3", "xsscon.py", "-u", website])
+        from config import get_tools_dir
+        subprocess.run(["python3", "xsscon.py", "-u", website],
+                       cwd=str(get_tools_dir() / "XSSCon"))
 
 
 class XanXSS(HackingTool):
@@ -102,10 +103,9 @@ class XanXSS(HackingTool):
     PROJECT_URL = "https://github.com/Ekultek/XanXSS"
 
     def run(self):
-        os.system("cd XanXSS; python xanxss.py -h")
-        console.print(
-            "[cyan]You have to run it manually using:[/cyan]\n[bold yellow]python xanxss.py [options][/bold yellow]"
-        )
+        from config import get_tools_dir
+        subprocess.run(["python3", "xanxss.py", "-h"],
+                       cwd=str(get_tools_dir() / "XanXSS"))
 
 
 class XSSStrike(HackingTool):

@@ -199,7 +199,9 @@ class BlackPhish(HackingTool):
         super().__init__([("Update", self.update)])
 
     def update(self):
-        os.system("cd BlackPhish && sudo bash update.sh")
+        import subprocess
+        from config import get_tools_dir
+        subprocess.run(["bash", "update.sh"], cwd=str(get_tools_dir() / "BlackPhish"))
 
 
 class Dnstwist(HackingTool):

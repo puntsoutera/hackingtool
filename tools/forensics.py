@@ -43,21 +43,26 @@ class BulkExtractor(HackingTool):
         ], installable=False, runnable=False)
 
     def gui_mode(self):
+        import subprocess
+        from config import get_tools_dir
         console.print(Panel(Text(self.TITLE, justify="center"), style="bold magenta"))
         console.print("[bold magenta]Cloning repository and attempting to run GUI...[/]")
-        os.system("git clone https://github.com/simsong/bulk_extractor.git")
-        os.system("ls src/ && cd .. && cd java_gui && ./BEViewer")
+        tools_dir = get_tools_dir()
+        subprocess.run(["git", "clone", "https://github.com/simsong/bulk_extractor.git"],
+                       cwd=str(tools_dir))
+        be_dir = tools_dir / "bulk_extractor"
+        subprocess.run(["./BEViewer"], cwd=str(be_dir / "java_gui"))
         console.print(
             "[magenta]If you get an error after clone go to /java_gui/src/ and compile the .jar file && run ./BEViewer[/]")
         console.print(
             "[magenta]Please visit for more details about installation: https://github.com/simsong/bulk_extractor[/]")
 
     def cli_mode(self):
+        import subprocess
         console.print(Panel(Text(self.TITLE + " - CLI Mode", justify="center"), style="bold magenta"))
-        os.system("sudo apt install bulk-extractor")
-        console.print("[magenta]Showing bulk_extractor help and options:[/]")
-        os.system("bulk_extractor -h")
-        os.system('echo "bulk_extractor [options] imagefile" | boxes -d headline | lolcat')
+        subprocess.run(["sudo", "apt", "install", "-y", "bulk-extractor"])
+        console.print("[magenta]bulk_extractor [options] imagefile[/]")
+        subprocess.run(["bulk_extractor", "-h"])
 
 
 class Guymager(HackingTool):
