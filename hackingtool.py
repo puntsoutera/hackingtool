@@ -123,6 +123,7 @@ def show_help():
             ("  21     ", "bold cyan"), ("Update / Uninstall hackingtool\n", "white"),
             ("  / or s ", "bold cyan"), ("search tools by name or keyword\n", "white"),
             ("  t      ", "bold cyan"), ("filter tools by tag (osint, web, c2, ...)\n", "white"),
+            ("  r      ", "bold cyan"), ("recommend tools for a task\n", "white"),
             ("  ?      ", "bold cyan"), ("show this help\n", "white"),
             ("  q      ", "bold cyan"), ("quit hackingtool\n\n", "white"),
             ("  Inside a category\n", "bold white"),
@@ -319,6 +320,7 @@ def build_menu():
         "  [dim]Enter number  ·  "
         "[bold cyan]/[/bold cyan] search  ·  "
         "[bold cyan]t[/bold cyan] tags  ·  "
+        "[bold cyan]r[/bold cyan] recommend  ·  "
         "[bold cyan]?[/bold cyan] help  ·  "
         "[bold cyan]q[/bold cyan] quit[/dim]\n"
     )
@@ -428,6 +430,104 @@ def filter_by_tag():
         tool.show_options()
 
 
+_RECOMMENDATIONS = {
+    "scan a network":           ["scanner", "port-scanner"],
+    "find subdomains":          ["recon"],
+    "scan for vulnerabilities": ["scanner", "web"],
+    "crack passwords":          ["bruteforce", "credentials"],
+    "find leaked secrets":      ["credentials"],
+    "phishing campaign":        ["social-engineering"],
+    "post exploitation":        ["c2", "privesc"],
+    "pivot through network":    ["network"],
+    "pentest active directory": ["active-directory"],
+    "pentest web application":  ["web", "scanner"],
+    "pentest cloud":            ["cloud"],
+    "pentest mobile app":       ["mobile"],
+    "reverse engineer binary":  ["reversing"],
+    "capture wifi handshake":   ["wireless"],
+    "intercept http traffic":   ["web", "network"],
+    "forensic analysis":        ["forensics"],
+    "ddos testing":             ["ddos"],
+    "create payloads":          ["payload"],
+    "find xss vulnerabilities": ["web"],
+    "brute force directories":  ["bruteforce", "web"],
+    "osint / recon a target":   ["osint", "recon"],
+    "hide my identity":         ["network"],
+}
+
+
+def recommend_tools():
+    """Show common tasks, user picks one, show matching tools."""
+    table = Table(
+        title="What do you want to do?",
+        box=box.SIMPLE_HEAD,
+    )
+    table.add_column("No.", justify="center", style="bold cyan", width=5)
+    table.add_column("Task", style="bold yellow")
+
+    tasks = list(_RECOMMENDATIONS.keys())
+    for i, task in enumerate(tasks, start=1):
+        table.add_row(str(i), task.title())
+
+    table.add_row("99", "Back to main menu")
+    console.print(table)
+
+    raw = Prompt.ask("[bold cyan]>[/bold cyan]", default="").strip()
+    if not raw or raw == "99":
+        return
+
+    try:
+        idx = int(raw)
+    except ValueError:
+        return
+
+    if 1 <= idx <= len(tasks):
+        task = tasks[idx - 1]
+        tag_names = _RECOMMENDATIONS[task]
+        tag_index = _get_all_tags()
+
+        # Collect unique tools across all matching tags
+        seen = set()
+        matches = []
+        for tag in tag_names:
+            for tool, cat in tag_index.get(tag, []):
+                if id(tool) not in seen:
+                    seen.add(id(tool))
+                    matches.append((tool, cat))
+
+        if not matches:
+            console.print("[dim]No tools found for this task.[/dim]")
+            Prompt.ask("[dim]Press Enter to return[/dim]", default="")
+            return
+
+        console.print(Panel(
+            f"[bold]Recommended tools for: {task.title()}[/bold]",
+            border_style="green", box=box.ROUNDED,
+        ))
+
+        rtable = Table(box=box.SIMPLE_HEAD, show_lines=True)
+        rtable.add_column("No.", justify="center", style="bold cyan", width=5)
+        rtable.add_column("", width=2)
+        rtable.add_column("Tool", style="bold yellow", min_width=20)
+        rtable.add_column("Category", style="magenta")
+
+        for i, (tool, cat) in enumerate(matches, start=1):
+            status = "[green]✔[/green]" if tool.is_installed else "[dim]✘[/dim]"
+            rtable.add_row(str(i), status, tool.TITLE, cat)
+
+        rtable.add_row("99", "", "Back", "")
+        console.print(rtable)
+
+        raw2 = Prompt.ask("[bold cyan]>[/bold cyan]", default="").strip()
+        if raw2 and raw2 != "99":
+            try:
+                ridx = int(raw2)
+                if 1 <= ridx <= len(matches):
+                    matches[ridx - 1][0].show_options()
+            except ValueError:
+                pass
+
+
 def search_tools():
     """Interactive search — user types query, results update, select to jump."""
     query = Prompt.ask("[bold cyan]/ Search[/bold cyan]", default="").strip().lower()
@@ -506,6 +606,10 @@ def interact_menu():
 
             if raw in ("t", "tag", "tags", "filter"):
                 filter_by_tag()
+                continue
+
+            if raw in ("r", "rec", "recommend"):
+                recommend_tools()
                 continue
 
             if raw in ("q", "quit", "exit"):
