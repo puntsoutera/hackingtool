@@ -91,15 +91,51 @@ sudo hackingtool
 
 ## Docker
 
+### Step 1 — Clone the repository
+
 ```bash
-# Build image
+git clone https://github.com/Z4nzu/hackingtool.git
+cd hackingtool
+```
+
+### Step 2 — Build the image
+
+```bash
 docker build -t hackingtool .
+```
 
-# Run
-docker-compose up -d
+> First build takes a few minutes (Kali base + apt packages). Subsequent builds are fast thanks to BuildKit layer caching.
 
-# Interact
+### Step 3 — Run
+
+**Option A — Direct (no Compose):**
+```bash
+docker run -it --rm hackingtool
+```
+
+**Option B — With Docker Compose (recommended):**
+```bash
+# Start in background
+docker compose up -d
+
+# Open an interactive shell
 docker exec -it hackingtool bash
+
+# Then launch the tool inside the container
+python3 hackingtool.py
+```
+
+**Option C — Dev mode (live source mount, changes reflected without rebuild):**
+```bash
+docker compose --profile dev up
+docker exec -it hackingtool-dev bash
+```
+
+### Stopping
+
+```bash
+docker compose down        # stop and remove container
+docker compose down -v     # also remove the tools data volume
 ```
 
 ## Requirements
