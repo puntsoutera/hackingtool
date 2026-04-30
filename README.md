@@ -74,6 +74,8 @@ Navigate through the menu using the number keys to select the desired tool categ
 > **Personal note:** I primarily use this for the Information Gathering and Recon sections while working through TryHackMe/HackTheBox labs. Most useful categories for me so far: **Subdomain Scanner**, **Recon Tools**, and **Hash Cracking Tools**.
 >
 > **Tip:** Running inside a Kali VM snapshot before using any tools makes it easy to roll back if something breaks a dependency.
+>
+> **Note to self:** Remember to run `sudo apt update && sudo apt upgrade` before a fresh install session — a few tools (particularly in the Wireless and Recon categories) fail silently if system packages are out of date.
 
 ## 🤝 Contributing
 
