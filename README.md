@@ -71,7 +71,7 @@ python3 hackingtool.py
 
 Navigate through the menu using the number keys to select the desired tool category, then select the specific tool you want to use.
 
-> **Personal note:** I primarily use this for the Information Gathering and Recon sections while working through TryHackMe/HackTheBox labs.
+> **Personal note:** I primarily use this for the Information Gathering and Recon sections while working through TryHackMe/HackTheBox labs. Most useful categories for me so far: **Subdomain Scanner**, **Recon Tools**, and **Hash Cracking Tools**.
 
 ## 🤝 Contributing
 
